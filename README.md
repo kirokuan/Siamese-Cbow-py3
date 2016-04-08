@@ -26,7 +26,6 @@ A paper has been written about Siamese CBOW, which is currently under review.
 Before Siamese CBOW can be run, the following reporitories need to be cloned
 too:
 
-* tokenizationUtils <https://bitbucket.org/TomKenter/tokenizationutils>
 * ppdbUtils <https://bitbucket.org/TomKenter/ppdbutils>
 * InexUtils <https://bitbucket.org/TomKenter/inexutils>
 * torontoBookCoprusUtils <https://bitbucket.org/TomKenter/torontobookcorpusutils>
@@ -35,8 +34,7 @@ They should be installed next to the Siamese CBOW directory:
 
     $ ls
     siamese-cbow
-    tokenizationutils
-    ppdbutils
+    ppdbUtils
     inexutils
     torontobookcorpusutils
 
@@ -50,48 +48,41 @@ In general, Siamese CBOW is called like:
 
 ### Required arguments
 
-<table>
-<tr>
-<td valign="top">DATA</td>
-<td>File (in PPDB case) or directory (in Toronto Book
-           	     Corpus and INEX case) to read the data from. NOTE that
-                        the program runs in aparticular input mode
-                        (INEX/PPDB/TORONTO) which is deduced from the
-                        directory/file name)
-</td></tr>
-<tr><td valign="top">OUTPUT_DIR</td>
-<td> A file to store the final and possibly intermediate
- word embeddings to (in cPickle format)
-</td></tr></table>
+
+Argument  | 
+-- | --
+DATA | File (in PPDB case) or directory (in Toronto Book Corpus and INEX case) to read the data from. NOTE that the program runs in aparticular input mode (INEX/PPDB/TORONTO) which is deduced from the                        directory/file name)
+OUTPUT_DIR |  A file to store the final and possibly intermediate word embeddings to (in cPickle format)
+
 
 ### Optional arguments
 
-<table>
-<tr><td valign="top">-h, --help</td><td valign="top">show this help message and exit</td></tr>
-<tr><td valign="top"> -w2v FILE</td><td valign="top">A word2vec model can be used to initialize the weights for words in the vocabulary file from (missing words just get a random embedding). If the weights are not initialized this way, they will be trained from scratch.</td></tr>
-<tr><td valign="top"> -vocab FILE</td><td valign="top">A vocabulary file is simply a file, SORTED BY FREQUENCY of frequence<SPACE>word lines. You can take the top n of these (which is why it should be sorted by frequency). See -max_nr_of_vocab_words.</td></tr>
-<tr><td valign="top"> -max_nr_of_vocab_words INT</td><td valign="top">Maximum number of words considered. If this is not specified, all words are considered</td></tr>
-<tr><td valign="top"> -max_nr_of_tokens INT</td><td valign="top"> Maximum number of tokens considered per sentence. Default: 50</td></tr>
-<tr><td valign="top"> -epochs INT</td><td valign="top">Maximum number of epochs for training. Default: 10</td></tr>
-<tr><td valign="top"> -learning_rate FLOAT</td><td valign="top">Learning rate. Default: 1.0</td></tr>
-<tr><td valign="top"> -gradient_clipping_bound FLOAT</td><td valign="top">Gradient clipping bound (so gradients will be clipped to [-FLOAT, +FLOAT]).</td></tr>
-<tr><td valign="top"> -momentum FLOAT</td><td valign="top">Momentum, only applies when 'nesterov' is used as update method (see -update). Default: 0.0</td></tr>
-<tr><td valign="top"> -batch_size INT</td><td valign="top">Batch size. Default: 1</td></tr>
-<tr><td valign="top"> -neg INT</td><td valign="top">Number of negative examples. Default: 1</td></tr>
-<tr><td valign="top"> -embedding_size INT</td><td valign="top">Dimensionality of the word embeddings. Default: 300</td></tr>
-<tr><td valign="top"> -share_weights</td><td valign="top">Turn this option on (a good idea in general) for the embedding weights of the input sentences and the other sentences to be shared.</td></tr>
-<tr><td valign="top"> -last_layer LAYER</td><td valign="top">Last layer is 'cosine' or 'sigmoid'. NOTE that this choice also determines the loss function (binary cross entropy or negative sampling loss, respectively). Default: cosine</td></tr>
-<tr><td valign="top"> -update UPDATE_ALGORITHM</td><td valign="top">Update algorithm. Options are 'adadelta', 'adamax', 'nesterov' (which uses momentum) and 'sgd'. Default: 'adadelta'</td></tr>
-<tr><td valign="top"> -regularize</td><td valign="top">Use l2 normalization on the parameters of the network</td></tr>
-<tr><td valign="top"> -dont_lowercase</td><td valign="top">By default, all input text is lowercased. Use this option to prevent this.</td></tr>
-<tr><td valign="top"> -store_at_batch INT</td><td valign="top">Store embeddings every INT batches.</td></tr>
-<tr><td valign="top"> -store_at_epoch INT</td><td valign="top">Store embeddings every INT epochs (so 1 for storing at the end of every epoch, 10 for for storing every 10 epochs, etc.).</td></tr>
-<tr><td valign="top"> -start_storing_at INT</td><td valign="top"> Start storing embeddings at epoch number INT. Default: 0. I.e. start storing right away (if -store_at_epoch is on, that is)</td></tr>
-<tr><td valign="top"> -dry_run</td><td valign="top">Build the network, print some statistics (if -v is on) and quit before training starts.</td></tr>
-<tr><td valign="top"> -d</td><td valign="top">Debugging mode</td></tr>
-<tr><td valign="top"> -v</td><td valign="top">Be verbose</td></tr>
-<tr><td valign="top"> -vv</td><td valign="top">Be very verbose</td></tr>
-</table>
+Argument  | 
+-h, --help | show this help message and exit
+-w2v FILE | A word2vec model can be used to initialize the weights for words in the vocabulary file from (missing words just get a random embedding). If the weights are not initialized this way, they will be trained from scratch.
+-vocab FILE | A vocabulary file is simply a file, SORTED BY FREQUENCY of frequence<SPACE>word lines. You can take the top n of these (which is why it should be sorted by frequency). See -max_nr_of_vocab_words.
+-max_nr_of_vocab_words INT | Maximum number of words considered. If this is not specified, all words are considered
+-max_nr_of_tokens INT |  Maximum number of tokens considered per sentence. Default: 50
+-epochs INT | Maximum number of epochs for training. Default: 10
+-learning_rate FLOAT | Learning rate. Default: 1.0
+-gradient_clipping_bound FLOAT | Gradient clipping bound (so gradients will be clipped to [-FLOAT, +FLOAT]).
+-momentum FLOAT | Momentum, only applies when 'nesterov' is used as update method (see -update). Default: 0.0
+-batch_size INT | Batch size. Default: 1
+-neg INT | Number of negative examples. Default: 1
+-embedding_size INT | Dimensionality of the word embeddings. Default: 300
+-share_weights | Turn this option on (a good idea in general) for the embedding weights of the input sentences and the other sentences to be shared.
+-last_layer LAYER | Last layer is 'cosine' or 'sigmoid'. NOTE that this choice also determines the loss function (binary cross entropy or negative sampling loss, respectively). Default: cosine
+-update UPDATE_ALGORITHM | Update algorithm. Options are 'adadelta', 'adamax', 'nesterov' (which uses momentum) and 'sgd'. Default: 'adadelta'
+-regularize | Use l2 normalization on the parameters of the network
+-dont_lowercase | By default, all input text is lowercased. Use this option to prevent this.
+-store_at_batch INT | Store embeddings every INT batches.
+-store_at_epoch INT | Store embeddings every INT epochs (so 1 for storing at the end of every epoch, 10 for for storing every 10 epochs, etc.).
+-start_storing_at INT |  Start storing embeddings at epoch number INT. Default: 0. I.e. start storing right away (if -store_at_epoch is on, that is)
+-dry_run | Build the network, print some statistics (if -v is on) and quit before training starts.
+-d | Debugging mode
+-v | Be verbose
+-vv | Be very verbose
+
 
 ### Data formats
 
