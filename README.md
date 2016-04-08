@@ -29,6 +29,7 @@ too:
 * ppdbUtils <https://bitbucket.org/TomKenter/ppdbutils>
 * InexUtils <https://bitbucket.org/TomKenter/inexutils>
 * torontoBookCoprusUtils <https://bitbucket.org/TomKenter/torontobookcorpusutils>
+* tokenizationUtils <https://bitbucket.org/TomKenter/tokenizationutils>
 
 They should be installed next to the Siamese CBOW directory:
 
@@ -37,6 +38,7 @@ They should be installed next to the Siamese CBOW directory:
     ppdbUtils
     inexutils
     torontobookcorpusutils
+    tokenizationutils
 
 ## Usage
 
