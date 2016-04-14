@@ -226,8 +226,8 @@ Please note that, to keep things simple, the software expects the .txt files and
 
 To generate a vocabulary file of the entire Toronto Book Corpus, run the following scripts:
 
-    $ python makeVocab.py /path/to/toronto_book_corpus/books_large_p1.corrected.txt > \
+    $ python makeVocab.py /path/to/vocabs/toronto_book_corpus/books_large_p1.corrected.txt > \
        books_large_p1.corrected.vocab.txt
-    $ python makeVocab.py /path/to/toronto_book_corpus/books_large_p2.txt > \
+    $ python makeVocab.py /path/to/vocabs/toronto_book_corpus/books_large_p2.txt > \
        books_large_p2.vocab.txt
-    $ python ../inexutils/combineCountWords.py > toBoCo.vocab.txt
+    $ python ../inexutils/combineVocabs.py /path/to/vocabs toBoCo.vocab.txt
