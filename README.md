@@ -125,7 +125,7 @@ The INEX dataset is in fact a Wikipedia dump from November 2012.
 It was released as a test collection for the INEX 2013 tweet contextualisation track (_Report on INEX 2013_, P. Bellot, et al, 2013).
 
 The dataset can be downloaded from <http://inex.mmci.uni-saarland.de/tracks/qa/> but please note that a password is required (which is available to INEX participants).
-If the dataset can not be obtained, probably another Wikipedia dump will do just as well.
+If the dataset can not be obtained, probably any other Wikipedia dump will do just as well.
 
 In order to use the data, we first need to preprocess it. and we need to have a vocabulary of all terms occurring in the corpus.
 Please see the subsections below.
@@ -137,6 +137,16 @@ Now we can call:
      -max_nr_of_vocab_words 65535 -share_weights -epochs 2 -batch_size 100 \
      -neg 2 /path/to/inex_paragraph_output_dir/ word_embeddings_output/
 
+We can again inspect the results:
+
+    >>> oWE_INEX = we.wordEmbeddings("word_embeddings_ouput/cosine_sharedWeights_adadelta_lr_1_noGradClip_epochs_2_batch_100_neg_2_voc_65536x300_noReg_lc_noPreInit_vocab_65535.end_of_epoch_2.pickle")
+    >>> oWE_INEX.most_similar('guitar')
+    [(u'guitarist', 0.97509861), (u'drummer', 0.96972936), (u'vocalist', 0.9674294), (u'bands', 0.96368152), (u'label', 0.96355927), (u'recording', 0.96105915), (u'records', 0.96105659), (u'concert', 0.95835334), (u'guitars', 0.95771766), (u'recordings', 0.95764017)]
+    >>> oWE_INEX.most_similar('guitarist')
+    [(u'drummer', 0.99089122), (u'album', 0.98755884), (u"band's", 0.98562163), (u'albums', 0.98432165), (u'ep', 0.98385787), (u'band', 0.98266292), (u'bassist', 0.98139161), (u'vocals', 0.98104805), (u'recording', 0.98002404), (u'vocalist', 0.97645795)]
+    >>> oWE_INEX.most_similar('architect')
+    [(u'architects', 0.98361444), (u'architectural', 0.96871454), (u'facade', 0.96360624), (u'architecture', 0.95200473), (u'fa\xe7ade', 0.94916135), (u'brick', 0.94499725), (u'renovation', 0.94063747), (u'renovated', 0.93654388), (u'demolished', 0.93343973), (u"building's", 0.929977)]
+    
 ##### Preprocessing INEX data
 
 The preprocessing consists of parsing the Wikipedia XML, tokenizing the text with NLTK `tokenizers/punkt/english.pickle`, replacing some utf-8 characters, normalizing the amounts of spaces, etc.
@@ -167,7 +177,7 @@ We first make a vocabulary for every __pre-processed__ file:
 
     $ ./makeAllVocabs.sh 5 /path/to/inex_paragraph_output_directory /path/to/dir_with_all_vocabularies
 
-Agian, the 5 indicates that 5 processes will (at max) be running simultaneously.
+Again, the 5 indicates that 5 processes will (at max) be running simultaneously.
 
 We now have one directory with very many vocabulary file.
 Now we can merge all of these in one big file:
