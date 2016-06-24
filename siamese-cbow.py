@@ -13,17 +13,18 @@ import signal
 
 import siamese_cbowUtils as scbowUtils
 import vocabUtils
-sys.path.append('../inexutils')
+sys.path.append('./inexutils')
 import InexUtils
-sys.path.append('../ppdbutils')
+sys.path.append('./ppdbutils')
 import ppdbUtils
-sys.path.append('../torontobookcorpusutils')
+sys.path.append('./torontobookcorpusutils')
 import torontoBookCorpusUtils
 
 # You can get killed form the outside on some clusters.
 # This is just to signal that.
 def signal_term_handler(signal, frame):
-  print >>sys.stderr, "[ERROR siamese-cbow] This process got a SIGTERM. Quitting."
+  print >>sys.stderr, \
+    "[ERROR siamese-cbow] This process got a SIGTERM. Quitting."
   exit(1)
 
 def init(oArgs):
@@ -226,8 +227,7 @@ if __name__ == "__main__":
                                   iMaxNrOfTokens=oArgs.iMaxNrOfTokens,
                                   npaBatch_1=npaBatch_1, npaBatch_2=npaBatch_2,
                                   iBatchSize=oArgs.iBatchSize,
-                                  iPos=iPos, iNeg=oArgs.iNeg,
-                                  bDebug=oArgs.bDebug):
+                                  iPos=iPos, iNeg=oArgs.iNeg):
       iTrainBatches += 1
       iNrOfBatchesSoFar += 1
       if oArgs.bVeryVerbose:

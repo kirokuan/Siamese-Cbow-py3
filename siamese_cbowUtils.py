@@ -357,7 +357,7 @@ def preInit(tWeightShape, oW2v, oVocab):
 
 def nextBatch(oSentenceIterator, funcRandomIterator, oVocab=None,
               npaBatch_1=None, npaBatch_2=None, iMaxNrOfTokens=None,
-              iBatchSize=None, iPos=None, iNeg=None, bDebug=False):
+              iBatchSize=None, iPos=None, iNeg=None):
   '''
   This function gives back a batch to train/test on.
   It needs:
@@ -628,65 +628,60 @@ def parseArguments():
                            help="File (in PPDB case) or directory (in Toronto Book Corpus and INEX case) to read the data from. NOTE that the program runs in aparticular input mode (INEX/PPDB/TORONTO) which is deduced from the directory/file name)")
   oArgsParser.add_argument('OUTPUT_DIR',
                            help="A file to store the final and possibly intermediate word embeddings to (in cPickle format)")
-  oArgsParser.add_argument('-w2v', dest="sWord2VecFile", metavar="FILE",
-                           help="A word2vec model can be used to initialize the weights for words in the vocabulary file from (missing words just get a random embedding). If the weights are not initialized this way, they will be trained from scratch.",
-                           action="store")
-  oArgsParser.add_argument('-vocab', dest="sVocabFile", metavar="FILE",
-                           help="A vocabulary file is simply a file, SORTED BY FREQUENCY of frequence<SPACE>word lines. You can take the top n of these (which is why it should be sorted by frequency). See -max_nr_of_vocab_words.",
-                           action="store")
-  oArgsParser.add_argument('-max_nr_of_vocab_words', metavar="INT",
-                           dest="iMaxNrOfVocabWords",
-                           help="Maximum number of words considered. If this is not specified, all words are considered",
-                           type=int, action="store")
-  oArgsParser.add_argument('-max_nr_of_tokens', metavar="INT",
-                           dest="iMaxNrOfTokens",
-                           help="Maximum number of tokens considered per sentence. Default: 50",
-                           type=int, action="store", default=50)
-  oArgsParser.add_argument('-epochs', metavar="INT", dest="iEpochs",
-                           help="Maximum number of epochs for training. Default: 10",
-                           type=int, action="store", default=10)
-  oArgsParser.add_argument('-learning_rate', metavar="FLOAT",
-                           dest="fLearningRate",
-                           help="Learning rate. Default: 1.0",
-                           type=float, action="store", default=1.0)
-  oArgsParser.add_argument('-gradient_clipping_bound', metavar="FLOAT",
-                           dest="fGradientClippingBound",
-                           help="Gradient clipping bound (so gradients will be clipped to [-FLOAT, +FLOAT]).",
-                           type=float, action="store")
-  oArgsParser.add_argument('-momentum', metavar="FLOAT",
-                           dest="fMomentum",
-                           help="Momentum, only applies when 'nesterov' is used as update method (see -update). Default: 0.0",
-                           type=float, action="store", default=0.0)
   oArgsParser.add_argument('-batch_size', metavar="INT", dest="iBatchSize",
                            help="Batch size. Default: 1",
                            type=int, action="store", default=1)
-  oArgsParser.add_argument('-neg', metavar="INT", dest="iNeg",
-                           help="Number of negative examples. Default: 1",
-                           type=int, action="store", default=1)
+  oArgsParser.add_argument('-dont_lowercase', dest='bDontLowercase',
+                           help="By default, all input text is lowercased. Use this option to prevent this.",
+                           action='store_true')
+  oArgsParser.add_argument('-dry_run', dest="bDryRun",
+                           help="Build the network, print some statistics (if -v is on) and quit before training starts.",
+                           action="store_true")
   oArgsParser.add_argument('-embedding_size', metavar="INT",
                            dest="iEmbeddingSize",
                            help="Dimensionality of the word embeddings. Default: 300",
                            type=int, action="store", default=300)
-  oArgsParser.add_argument('-share_weights', dest="bShareWeights",
-                           help="Turn this option on (a good idea in general) for the embedding weights of the input sentences and the other sentences to be shared.",
-                           action="store_true")
+  oArgsParser.add_argument('-epochs', metavar="INT", dest="iEpochs",
+                           help="Maximum number of epochs for training. Default: 10",
+                           type=int, action="store", default=10)
+  oArgsParser.add_argument('-gradient_clipping_bound', metavar="FLOAT",
+                           dest="fGradientClippingBound",
+                           help="Gradient clipping bound (so gradients will be clipped to [-FLOAT, +FLOAT]).",
+                           type=float, action="store")
   oArgsParser.add_argument('-last_layer', metavar="LAYER",
                            dest="sLastLayer",
                            help="Last layer is 'cosine' or 'sigmoid'. NOTE that this choice also determines the loss function (binary cross entropy or negative sampling loss, respectively). Default: cosine",
                            action="store", default='cosine',
                            choices=['cosine', 'sigmoid'])
-  oArgsParser.add_argument('-update', metavar="UPDATE_ALGORITHM",
-                           dest="sUpdate",
-                           help="Update algorithm. Options are 'adadelta', 'adamax', 'nesterov' (which uses momentum) and 'sgd'. Default: 'adadelta'",
-                           action="store", default='adadelta',
-                           choices=['adadelta', 'adamax', 'sgd',
-                                    'nesterov'])
+  oArgsParser.add_argument('-learning_rate', metavar="FLOAT",
+                           dest="fLearningRate",
+                           help="Learning rate. Default: 1.0",
+                           type=float, action="store", default=1.0)
+  oArgsParser.add_argument('-max_nr_of_tokens', metavar="INT",
+                           dest="iMaxNrOfTokens",
+                           help="Maximum number of tokens considered per sentence. Default: 50",
+                           type=int, action="store", default=50)
+  oArgsParser.add_argument('-max_nr_of_vocab_words', metavar="INT",
+                           dest="iMaxNrOfVocabWords",
+                           help="Maximum number of words considered. If this is not specified, all words are considered",
+                           type=int, action="store")
+  oArgsParser.add_argument('-momentum', metavar="FLOAT",
+                           dest="fMomentum",
+                           help="Momentum, only applies when 'nesterov' is used as update method (see -update). Default: 0.0",
+                           type=float, action="store", default=0.0)
+  oArgsParser.add_argument('-neg', metavar="INT", dest="iNeg",
+                           help="Number of negative examples. Default: 1",
+                           type=int, action="store", default=1)
   oArgsParser.add_argument('-regularize', dest="bRegularize",
                            help="Use l2 normalization on the parameters of the network",
                            action="store_true")
-  oArgsParser.add_argument('-dont_lowercase', dest='bDontLowercase',
-                           help="By default, all input text is lowercased. Use this option to prevent this.",
-                           action='store_true')
+  oArgsParser.add_argument('-share_weights', dest="bShareWeights",
+                           help="Turn this option on (a good idea in general) for the embedding weights of the input sentences and the other sentences to be shared.",
+                           action="store_true")
+  oArgsParser.add_argument('-start_storing_at', metavar="INT",
+                           dest="iStartStoringAt",
+                           help="Start storing embeddings at epoch number INT. Default: 0. I.e. start storing right away (if -store_at_epoch is on, that is)",
+                           action="store", type=int, default=0)  
   oArgsParser.add_argument('-store_at_batch', metavar="INT",
                            dest="iStoreAtBatch",
                            help="Store embeddings every INT batches.",
@@ -695,19 +690,22 @@ def parseArguments():
                            metavar="INT",
                            help="Store embeddings every INT epochs (so 1 for storing at the end of every epoch, 10 for for storing every 10 epochs, etc.).",
                            action="store", type=int)
-  oArgsParser.add_argument('-start_storing_at', metavar="INT",
-                           dest="iStartStoringAt",
-                           help="Start storing embeddings at epoch number INT. Default: 0. I.e. start storing right away (if -store_at_epoch is on, that is)",
-                           action="store", type=int, default=0)  
-  oArgsParser.add_argument('-dry_run', dest="bDryRun",
-                           help="Build the network, print some statistics (if -v is on) and quit before training starts.",
-                           action="store_true")
-  oArgsParser.add_argument("-d", dest="bDebug", action="store_true",
-                           help="Debugging mode")
+  oArgsParser.add_argument('-update', metavar="UPDATE_ALGORITHM",
+                           dest="sUpdate",
+                           help="Update algorithm. Options are 'adadelta', 'adamax', 'nesterov' (which uses momentum) and 'sgd'. Default: 'adadelta'",
+                           action="store", default='adadelta',
+                           choices=['adadelta', 'adamax', 'sgd',
+                                    'nesterov'])
   oArgsParser.add_argument("-v", dest="bVerbose", action="store_true",
                            help="Be verbose")
+  oArgsParser.add_argument('-vocab', dest="sVocabFile", metavar="FILE",
+                           help="A vocabulary file is simply a file, SORTED BY FREQUENCY of frequence<SPACE>word lines. You can take the top n of these (which is why it should be sorted by frequency). See -max_nr_of_vocab_words.",
+                           action="store")
   oArgsParser.add_argument("-vv", dest="bVeryVerbose", action="store_true",
                            help="Be very verbose")
+  oArgsParser.add_argument('-w2v', dest="sWord2VecFile", metavar="FILE",
+                           help="A word2vec model can be used to initialize the weights for words in the vocabulary file from (missing words just get a random embedding). If the weights are not initialized this way, they will be trained from scratch.",
+                           action="store")
   oArgs = oArgsParser.parse_args()
 
   if (oArgs.sVocabFile is None) and (oArgs.sWord2VecFile is None):
@@ -768,7 +766,7 @@ if __name__ == "__main__":
                         tWeightShape=npaWordEmbeddings.shape,
                         npaWordEmbeddings=npaWordEmbeddings,
                         sLastLayer=oArgs.sLastLayer,
-                        bVerbose=oArgs.bVerbose, bDebug=oArgs.bDebug)
+                        bVerbose=oArgs.bVerbose)
 
   prediction = lasagne.layers.get_output(network)
 

@@ -19,26 +19,21 @@ similarity to negative examples.
 
 _IMAGE_
 
-A paper has been written about Siamese CBOW, which is currently under review.
+If you use Siamese CBOW and publish about your work, please cite the following
+article <http://arxiv.org/pdf/1606.04640v1.pdf>:
 
-## Installing
+    @inproceedings{kenter2016siamesecbow,
+      title={Siamese CBOW: Optimizing Word Embeddings for Sentence Representations},
+      author={Kenter, Tom and Borisov, Alexey and de Rijke, Maarten},
+      booktitle={Proceedings of the The 54th Annual Meeting of the Association for Computational Linguistics (ACL 2016)},
+      year={2016},
+    }
 
-Before Siamese CBOW can be run, the following reporitories need to be cloned
-too:
+### Dependencies
 
-* ppdbUtils <https://bitbucket.org/TomKenter/ppdbutils>
-* InexUtils <https://bitbucket.org/TomKenter/inexutils>
-* torontoBookCoprusUtils <https://bitbucket.org/TomKenter/torontobookcorpusutils>
-* tokenizationUtils <https://bitbucket.org/TomKenter/tokenizationutils>
-
-They should be installed next to the Siamese CBOW directory:
-
-    $ ls
-    siamese-cbow
-    ppdbUtils
-    inexutils
-    torontobookcorpusutils
-    tokenizationutils
+* Theano
+* Lasagne
+* Gensim
 
 ## Usage
 
@@ -53,38 +48,36 @@ In general, Siamese CBOW is called like:
 
 Argument  | 
 -- | --
-DATA | File (in PPDB case) or directory (in Toronto Book Corpus and INEX case) to read the data from. NOTE that the program runs in aparticular input mode (INEX/PPDB/TORONTO) which is deduced from the                        directory/file name)
+DATA | File (in PPDB case) or directory (in Toronto Book Corpus and INEX case) to read the data from. NOTE that the program runs in aparticular input mode (INEX/PPDB/TORONTO) which is deduced from the directory/file name)
 OUTPUT_DIR |  A file to store the final and possibly intermediate word embeddings to (in cPickle format)
 
 
 ### Optional arguments
 
 Argument  | 
--h, --help | show this help message and exit
--w2v FILE | A word2vec model can be used to initialize the weights for words in the vocabulary file from (missing words just get a random embedding). If the weights are not initialized this way, they will be trained from scratch.
--vocab FILE | A vocabulary file is simply a file, SORTED BY FREQUENCY of frequence<SPACE>word lines. You can take the top n of these (which is why it should be sorted by frequency). See -max_nr_of_vocab_words.
--max_nr_of_vocab_words INT | Maximum number of words considered. If this is not specified, all words are considered
--max_nr_of_tokens INT |  Maximum number of tokens considered per sentence. Default: 50
--epochs INT | Maximum number of epochs for training. Default: 10
--learning_rate FLOAT | Learning rate. Default: 1.0
--gradient_clipping_bound FLOAT | Gradient clipping bound (so gradients will be clipped to [-FLOAT, +FLOAT]).
--momentum FLOAT | Momentum, only applies when 'nesterov' is used as update method (see -update). Default: 0.0
 -batch_size INT | Batch size. Default: 1
--neg INT | Number of negative examples. Default: 1
--embedding_size INT | Dimensionality of the word embeddings. Default: 300
--share_weights | Turn this option on (a good idea in general) for the embedding weights of the input sentences and the other sentences to be shared.
--last_layer LAYER | Last layer is 'cosine' or 'sigmoid'. NOTE that this choice also determines the loss function (binary cross entropy or negative sampling loss, respectively). Default: cosine
--update UPDATE_ALGORITHM | Update algorithm. Options are 'adadelta', 'adamax', 'nesterov' (which uses momentum) and 'sgd'. Default: 'adadelta'
--regularize | Use l2 normalization on the parameters of the network
 -dont_lowercase | By default, all input text is lowercased. Use this option to prevent this.
+-dry_run | Build the network, print some statistics (if -v is on) and quit before training starts.
+-embedding_size INT | Dimensionality of the word embeddings. Default: 300
+-epochs INT | Maximum number of epochs for training. Default: 10
+-h, --help | show this help message and exit
+-gradient_clipping_bound FLOAT | Gradient clipping bound (so gradients will be clipped to [-FLOAT, +FLOAT]).
+-last_layer LAYER | Last layer is 'cosine' or 'sigmoid'. NOTE that this choice also determines the loss function (binary cross entropy or negative sampling loss, respectively). Default: cosine
+-learning_rate FLOAT | Learning rate. Default: 1.0
+-max_nr_of_tokens INT |  Maximum number of tokens considered per sentence. Default: 50
+-max_nr_of_vocab_words INT | Maximum number of words considered. If this is not specified, all words are considered
+-momentum FLOAT | Momentum, only applies when 'nesterov' is used as update method (see -update). Default: 0.0
+-neg INT | Number of negative examples. Default: 1
+-share_weights | Turn this option on (a good idea in general) for the embedding weights of the input sentences and the other sentences to be shared.
+-start_storing_at INT |  Start storing embeddings at epoch number INT. Default: 0. I.e. start storing right away (if -store_at_epoch is on, that is)
 -store_at_batch INT | Store embeddings every INT batches.
 -store_at_epoch INT | Store embeddings every INT epochs (so 1 for storing at the end of every epoch, 10 for for storing every 10 epochs, etc.).
--start_storing_at INT |  Start storing embeddings at epoch number INT. Default: 0. I.e. start storing right away (if -store_at_epoch is on, that is)
--dry_run | Build the network, print some statistics (if -v is on) and quit before training starts.
--d | Debugging mode
+-regularize | Use l2 normalization on the parameters of the network
+-update UPDATE_ALGORITHM | Update algorithm. Options are 'adadelta', 'adamax', 'nesterov' (which uses momentum) and 'sgd'. Default: 'adadelta'
 -v | Be verbose
+-vocab FILE | A vocabulary file is simply a file, SORTED BY FREQUENCY of frequence<SPACE>word lines. You can take the top n of these (which is why it should be sorted by frequency). See -max_nr_of_vocab_words.
 -vv | Be very verbose
-
+-w2v FILE | A word2vec model can be used to initialize the weights for words in the vocabulary file from (missing words just get a random embedding). If the weights are not initialized this way, they will be trained from scratch.
 
 ### Data formats
 
@@ -96,7 +89,7 @@ The PPDB corpus is a corpus of paired short phrases which are explicitely
 marked for semantic similarity.
 The corpus can be downloaded from <http://www.cis.upenn.edu/~ccb/ppdb/>.
 
-To run Siamese CBOW on the XL version of the corpus, run this command:
+To run Siamese CBOW on the XL version of the corpus, first construct a vocabulary file (see below 'Preprocessing PPDB data'), and then run this command:
 
     $ THEANO_FLAGS=floatX=float32 python siamese-cbow.py -v -share_weights \
       -vocab /path/to/ppdbVocabFile.txt -epochs 5 -neg 2 -embedding_size 100 \
@@ -118,6 +111,15 @@ We can inspect these embeddings by loading them in Python:
     [(u'controlling', 0.97573024), (u'inspections', 0.97478831), (u'checks', 0.97122586), (u'surveillance', 0.96790159), (u'oversight', 0.96275693), (u'supervision', 0.95519221), (u'supervises', 0.95428753), (u'supervise', 0.95306516), (u'monitoring', 0.95126694), (u'monitors', 0.9501)]
     >>> oWE_PPDB_epoch_5.most_similar('love')
     [(u'loves', 0.92758971), (u'likes', 0.9195503), (u'apologize', 0.91565502), (u'adore', 0.89775938), (u'apologise', 0.89251494), (u'oh', 0.89192468), (u'ah', 0.88041437), (u'aw', 0.87821764), (u'dear', 0.8773343), (u'wow', 0.87290406)]
+
+##### Preprocessing PPDB data
+
+To construct a vocabulary file to be used by Siamese CBOW, go to the Siamese
+CBOW install directory, and say:
+
+    $ ./ppdbUtils/makeVocab.sh /path/to/PPDB/xl/ppdb-1.0-xl-phrasal > path/to/ppdbVocabFile.txt
+
+Note that this may take a while.
 
 #### INEX
 
@@ -188,7 +190,7 @@ Now we can merge all of these in one big file:
 
 The Toronto Book Corpus contains 74,004,228 already pre-processed sentences in total, which are made up of 1,057,070,918 tokens, originating from 7,087 unique books (_Aligning books and movies: Towards story-like visual explanations by watching movies and reading books._, Zhu et al., 2015).
 
-The corpus can be downloaded from http://www.cs.toronto.edu/~mbweb/.
+The corpus can be downloaded from <http://www.cs.toronto.edu/~mbweb/>.
 
 As no paragraphs boundaries are present in this corpus, we simply treat all triples of consecutive sentences as positive examples (NOTE that these may even cross book boundaries, though very rarely of course).
 
