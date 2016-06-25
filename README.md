@@ -11,16 +11,15 @@ A sentence can be a *positive example*, which means that it is supposed to be
 semantically similar to the sentence it is compared to, or a
 *negative example*, when it is not assumed to be semantically similar.
 
+![Siamese CBOW architecture](img/siamese-cbow.png "Siamese CBOW architecture")
+
 A sentence embedding is obtained by averaging the word embeddings of the words
 in a sentence.
 The cosine similarity between sentence pairs is calculated, and the network
 tries to give a high cosine similarity to positive examples, and a low cosine
 similarity to negative examples.
 
-_IMAGE_
-
-If you use Siamese CBOW and publish about your work, please cite the following
-article <http://arxiv.org/pdf/1606.04640v1.pdf>:
+If you use Siamese CBOW and publish about your work, please cite [Siamese CBOW: Optimizing Word Embeddings for Sentence Representations, T. Kenter, A. Borisov, M. de Rijke, ACL 2016](http://arxiv.org/pdf/1606.04640v1.pdf):
 
     @inproceedings{kenter2016siamesecbow,
       title={Siamese CBOW: Optimizing Word Embeddings for Sentence Representations},
