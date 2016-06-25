@@ -19,7 +19,7 @@ in a sentence.
 The cosine similarity between sentence pairs is calculated, and the network
 tries to give a high cosine similarity to positive examples, and a low cosine
 similarity to negative examples.
-Please not that there is a more elaborate picture of the architecture, that follows the actual implementation more closely, in the img/ directory.
+Please note that there is a more elaborate picture of the architecture, that follows the actual implementation more closely, in the img/ directory.
 
 
 If you use Siamese CBOW and publish about your work, please cite [Siamese CBOW: Optimizing Word Embeddings for Sentence Representations, T. Kenter, A. Borisov, M. de Rijke, ACL 2016](http://arxiv.org/pdf/1606.04640v1.pdf):
