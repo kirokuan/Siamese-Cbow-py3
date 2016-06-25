@@ -8,6 +8,12 @@ import lasagne
 import vocabUtils
 
 class wordEmbeddings:
+  '''
+  This class deals with word embeddings.
+  It's for storing, getting, displaying, finding most similar embeddings, etc.
+  It somewhat resembles the gensim api.
+  '''
+
   def __init__(self, sPickleFile=None, dDict=None, sVocabFile=None,
                bUnknownOmit=False, sAggregation='average', bDebug=False):
     self.bDebug = bDebug
@@ -84,8 +90,6 @@ class wordEmbeddings:
 
     # NOTE that we return all zeros if there are no known words...
     return npaV
-    #else:
-    #  return None
 
   def sentence_similarity(self, aTokens1, aTokens2):
     npaAggrate1 = self.getAggregate(aTokens1)

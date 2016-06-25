@@ -1,15 +1,11 @@
 import theano
 import theano.tensor as T
 import lasagne
-import scipy
 import numpy as np
 import sys
 import os
 import re
 import cPickle
-
-from theano.sparse import csr_matrix
-from theano.sparse.basic import structured_dot, sp_sum
 
 def makeOutputFileName(oArgs, iNrOfEmbeddings, iEmbeddingSize):
   sShareWeights = "sharedWeights" if oArgs.bShareWeights else "noSharedWeights"
@@ -568,15 +564,13 @@ def build_scbow(oArgs, iPos=None, oW2v=None, oVocab=None, tWeightShape=None):
   
   if oArgs.bVerbose:
     print "Building update functions"
-  # Create update expressions for training, i.e., how to modify the
-  # parameters at each training step. Here, we'll use Stochastic Gradient
-  # Descent (SGD) with Nesterov momentum, but Lasagne offers plenty more.
+
   params = lasagne.layers.get_all_params(llFinalLayer, trainable=True)
-  updates = None
 
   fStartLearningRate = np.float32(oArgs.fLearningRate)
   
   thsLearningRate = None
+  updates = None
   if oArgs.sUpdate == 'nesterov':
     updates = lasagne.updates.nesterov_momentum(
       loss, params, learning_rate=oArgs.fLearningRate,

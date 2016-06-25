@@ -52,7 +52,7 @@ class ppdb:
 
         # Get the number of lines in the file
         sCommand = "zcat %s | wc -l" % sFile if sFile.endswith(".gz") \
-            else "wc lc < %s" % sFile
+            else "wc -l < %s" % sFile
         # When wc reads from stdin it just gives a number as output
         self.iTotalNrOfSentences = \
             int(subprocess.check_output(sCommand, shell=True) )
@@ -99,8 +99,7 @@ class ppdb:
         aLine = sLine.split(" ||| ")
 
       if len(aLine) < 3:
-        print >>sys.stderr, "[WARNING %s] in line '%s'" % (self.sName, sLine)
-        # Just ignore it for now....
+        print >>sys.stderr, "[ERROR %s] in line '%s'" % (self.sName, sLine)
         exit(1)
 
       aTokens1 = [x for x in tokenizer.tokenizeSentence(aLine[1], bLowerCase=True) if (x != 'rrb') and (x != 'lrb')]
@@ -127,7 +126,7 @@ class ppdb:
 
       if self.bRandom:
         fhFile.seek(max(0, (np.random.randint(0, self.iNrOfCharacters) - \
-                              self.iLastLineLength) ) )
+                            self.iLastLineLength) ) )
         fastForward(fhFile)
 
     fhFile.close()
