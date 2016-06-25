@@ -6,15 +6,13 @@ import numpy as np
 import time
 import os
 import sys
-import scipy
 import gensim
-import cPickle
 import signal
 
 import siamese_cbowUtils as scbowUtils
 import vocabUtils
 sys.path.append('./inexutils')
-import InexUtils
+import inexUtils
 sys.path.append('./ppdbutils')
 import ppdbUtils
 sys.path.append('./torontobookcorpusutils')

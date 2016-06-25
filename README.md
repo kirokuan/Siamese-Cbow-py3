@@ -30,9 +30,9 @@ If you use Siamese CBOW and publish about your work, please cite [Siamese CBOW: 
 
 ### Dependencies
 
-* Theano
-* Lasagne
-* Gensim
+* [Theano](http://www.deeplearning.net/software/theano/)
+* [Lasagne](http://lasagne.readthedocs.io/)
+* [Gensim](http://radimrehurek.com/gensim/)
 
 ## Usage
 
@@ -88,7 +88,7 @@ The PPDB corpus is a corpus of paired short phrases which are explicitely
 marked for semantic similarity.
 The corpus can be downloaded from <http://www.cis.upenn.edu/~ccb/ppdb/>.
 
-To run Siamese CBOW on the XL version of the corpus, first construct a vocabulary file (see below 'Preprocessing PPDB data'), and then run this command:
+To run Siamese CBOW on the XL version of the corpus, first construct a vocabulary file (see the section 'Preprocessing PPDB data' below), and then run this command:
 
     $ THEANO_FLAGS=floatX=float32 python siamese-cbow.py -v -share_weights \
       -vocab /path/to/ppdbVocabFile.txt -epochs 5 -neg 2 -embedding_size 100 \
@@ -128,10 +128,9 @@ It was released as a test collection for the INEX 2013 tweet contextualisation t
 The dataset can be downloaded from <http://inex.mmci.uni-saarland.de/tracks/qa/> but please note that a password is required (which is available to INEX participants).
 If the dataset can not be obtained, probably any other Wikipedia dump will do just as well.
 
-In order to use the data, we first need to preprocess it. and we need to have a vocabulary of all terms occurring in the corpus.
-Please see the subsections below.
+In order to run Siamese CBOW on INEX, we first need to preprocess the data and generate a vocabulary file form it (see the section 'Preprocessing INEX data' below).
 
-For now, let's assume the pre-processed data is in `/path/to/inex_paragraph_output_dir/` and we have vocabulary `INEX.vocab/txt`.<br>
+For now, let's assume the pre-processed data is in `/path/to/inex_paragraph_output_dir/` and we have vocabulary `INEX.vocab/txt`.</br>
 Now we can call:
 
     $ THEANO_FLAGS=floatX=float32 python siamese-cbow.py -v -vocab INEX.vocab.txt \
@@ -163,7 +162,7 @@ Preprocessing is done by running the following script:
     $ ./tokenizeInexFiles.sh /path/to/INEXQAcorpus2013 "*" \
        /path/to/inex_paragraph_output_directory 5 -paragraph_mode
 
-The penultimate argument (5 in the example above) controls the number of processes to run in parallel.<br>
+The penultimate argument (5 in the example above) controls the number of processes to run in parallel.</br>
 For a further explanation of arguments, run `tokenizeInexFiles.sh` without any arguments.
 
 The INEX Wikipedia dump comes as one file per Wikipedia page.
@@ -178,10 +177,10 @@ We first make a vocabulary for every __pre-processed__ file:
 
     $ ./makeAllVocabs.sh 5 /path/to/inex_paragraph_output_directory /path/to/dir_with_all_vocabularies
 
-Again, the 5 indicates that 5 processes will (at max) be running simultaneously.
+Again, the 5 indicates that 5 processes will (at most) be running simultaneously.
 
 We now have one directory with very many vocabulary file.
-Now we can merge all of these in one big file:
+We can merge them all to one big file by saying:
 
     $ python combineVocabs.py /path/to/dir_with_all_vocabularies INEX.vocab.txt
 
@@ -205,7 +204,7 @@ The vocabulary size here is chosen to allow only for words appearing 5 times or 
 ##### Preprocessing Toronto Book Corpus
 
 The Toronto Book Corpus comes in two files: `books_large_p1.txt` and `books_large_p2.txt`.
-The first one contains some utf8 characters that were of no importance, but which caused trouble.
+The first one contains some characters that cause utf8 encoding errors, while being of no importance.
 To get rid of them, run:
 
     $ cd /path/to/torontobookcorpusutils
