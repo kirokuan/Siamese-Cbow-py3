@@ -133,7 +133,8 @@ If the dataset can not be obtained, probably any other Wikipedia dump will do ju
 
 In order to run Siamese CBOW on INEX, we first need to preprocess the data and generate a vocabulary file form it (see the section 'Preprocessing INEX data' below).
 
-For now, let's assume the pre-processed data is in `/path/to/inex_paragraph_output_dir/` and we have vocabulary `INEX.vocab/txt`.</br>
+For now, let's assume the pre-processed data is in `/path/to/inex_paragraph_output_dir/` and we have vocabulary `INEX.vocab/txt`.
+
 Now we can call:
 
     $ THEANO_FLAGS=floatX=float32 python siamese-cbow.py -v -vocab INEX.vocab.txt \
@@ -165,7 +166,8 @@ Preprocessing is done by running the following script:
     $ ./tokenizeInexFiles.sh /path/to/INEXQAcorpus2013 "*" \
        /path/to/inex_paragraph_output_directory 5 -paragraph_mode
 
-The penultimate argument (5 in the example above) controls the number of processes to run in parallel.</br>
+The penultimate argument (5 in the example above) controls the number of processes to run in parallel.
+
 For a further explanation of arguments, run `tokenizeInexFiles.sh` without any arguments.
 
 The INEX Wikipedia dump comes as one file per Wikipedia page.
