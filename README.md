@@ -119,7 +119,8 @@ We can inspect these embeddings by loading them in Python:
 To construct a vocabulary file to be used by Siamese CBOW, go to the Siamese
 CBOW install directory, and say:
 
-    $ ./ppdbUtils/makeVocab.sh /path/to/PPDB/xl/ppdb-1.0-xl-phrasal > path/to/ppdbVocabFile.txt
+    $ cd ./ppdbutils/
+    $ ./makeVocab.sh /path/to/PPDB/xl/ppdb-1.0-xl-phrasal > path/to/ppdbVocabFile.txt
 
 Note that this may take a while.
 
