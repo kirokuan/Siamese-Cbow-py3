@@ -1,5 +1,7 @@
 # Siamese CBOW
 
+This repository contains the code to generate embeddings. If you are interested in pretrained embeddings, scroll down to the bottom. 
+
 ## Overview
 
 Siamese CBOW is a neural network architecture for calculating word embeddings
@@ -237,3 +239,11 @@ To generate a vocabulary file of the entire Toronto Book Corpus, run the followi
     $ python makeVocab.py /path/to/vocabs/toronto_book_corpus/books_large_p2.txt > \
        books_large_p2.vocab.txt
     $ python ../inexutils/combineVocabs.py /path/to/vocabs toBoCo.vocab.txt
+
+## Pretrained embeddings
+
+To keep this repository lightweight, the pretrained embeddings are stored somewhere else:
+
+* [Vectors trained on the Toronto Book Corpus](http://tomkenter.nl/siamese_cbow/pretrained_embeddings/toronto_book_corpus/cosine_sharedWeights_sgd_lr_0_0001_noGradClip_epochs_5_batch_100_neg_2_voc_315644x300_noReg_lc_noPreInit_vocab_315643.end_of_epoch_1.pickle.zip)<br>These are the exact vectors used to generate the numbers in 'Siamese CBOW: Optimizing Word Embeddings for Sentence Representations', Kenter et al, ACL 2016.<br>What I noticed is that they are not very human-interpretable. This has something to do with the corpus, I think, as this doesn't go so much for vectors trained on other corpora (see below).
+* Vectors trained on Wikipedia corpus<br>*Coming soon...*
+* Vectors trained on PPDB<br>*Coming soon...*
