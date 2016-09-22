@@ -19,7 +19,7 @@ import sys
 import gzip
 import numpy as np
 
-sys.path.append("../tokenizationutils")
+sys.path.append("./tokenizationutils")
 import tokenizer
 
 def fastForward(fhFile):
