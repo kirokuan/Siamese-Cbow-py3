@@ -1,6 +1,6 @@
 # Siamese CBOW
 
-This repository contains the code to generate embeddings. If you are interested in pretrained embeddings, scroll down to the bottom. 
+This repository contains the code of Siamese CBOW which can be used to generate word embeddings, optimized for sentence representations. If you are interested in pretrained embeddings, scroll down to the bottom. 
 
 ## Overview
 
