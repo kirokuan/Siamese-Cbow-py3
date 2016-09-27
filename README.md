@@ -244,10 +244,10 @@ To generate a vocabulary file of the entire Toronto Book Corpus, run the followi
 
 To keep this repository lightweight, the pretrained embeddings are stored somewhere else:
 
+
+* [Vectors trained on PPDB XL (57.4 Mb zip file, 127.1 Mb unzipped)](http://www.tomkenter.nl/siamese_cbow/pretrained_embeddings/PPDB/cosine_sharedWeights_adadelta_lr_1_epochs_5_batch_100_neg_2_300d_noReg_lc_noPreInit_vocab_65535.end_of_epoch_5.pickle.zip) These vectors are what the examples in the PPDB section above are generated from.
+* [Vectors trained on the Wikipedia (INEX) corpus (100.6 Mb zip file, 223.2 Mb unzipped)](http://www.tomkenter.nl/siamese_cbow/pretrained_embeddings/INEX/cosine_sharedWeights_adadelta_lr_1_noGradClip_epochs_2_batch_100_neg_2_voc_65536x300_noReg_lc_noPreInit_vocab_65535.end_of_epoch_2.pickle.zip)
+  These vectors are what the examples in the INEX section above are generated from.
 * [Vectors trained on the Toronto Book Corpus (483.2 Mb zip file, 1.3 Gb unzipped)](http://tomkenter.nl/siamese_cbow/pretrained_embeddings/toronto_book_corpus/cosine_sharedWeights_sgd_lr_0_0001_noGradClip_epochs_5_batch_100_neg_2_voc_315644x300_noReg_lc_noPreInit_vocab_315643.end_of_epoch_1.pickle.zip)
   These are the exact vectors used to generate the numbers in 'Siamese CBOW: Optimizing Word Embeddings for Sentence Representations', Kenter et al, ACL 2016.
   What I noticed is that they are not very human-interpretable. This has something to do with the corpus, I think, as this doesn't go so much for vectors trained on other corpora (see below).
-* [Vectors trained on the Wikipedia (INEX) corpus (100.6 Mb zip file, 223.2 Mb unzipped)](http://www.tomkenter.nl/siamese_cbow/pretrained_embeddings/INEX/cosine_sharedWeights_adadelta_lr_1_noGradClip_epochs_2_batch_100_neg_2_voc_65536x300_noReg_lc_noPreInit_vocab_65535.end_of_epoch_2.pickle.zip)
-  These vectors are what the examples in the INEX section above are generated from.
-* Vectors trained on PPDB
-  *Coming soon...*
