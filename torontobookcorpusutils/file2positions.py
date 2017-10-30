@@ -19,7 +19,7 @@ import sys
 import subprocess
 import numpy as np
 import time
-import cPickle
+import _pickle as cPickle
 import os
 
 def file2positions(sFile):
@@ -36,8 +36,8 @@ def file2positions(sFile):
   fhFile = codecs.open(sFile, mode='r', encoding='utf8')
   for sLine in fhFile:
     if iSentenceIndex == iNrOfLines:
-      print >>sys.stderr, "[WARNING] reached the end %d. Last line was '%s'"%\
-          (iSentenceIndex, sLine)
+      print("[WARNING] reached the end %d. Last line was '%s'"%\
+          (iSentenceIndex, sLine))
       break
 
     fhOut.write("%d\t%s" % (iSentenceIndex, sLine))
@@ -61,7 +61,7 @@ if __name__ == "__main__":
 
   fStartTime = None
   if oArgs.bVerbose:
-    print "Start calculating positions"
+    print("Start calculating positions")
     fStartTime = time.time()
 
   npaSentencePositions = file2positions(oArgs.FILE)
@@ -77,16 +77,15 @@ if __name__ == "__main__":
         if iHours > 1 else "%d hour, " % iHours 
     sMinutes = "%d minutes" % iMinutes if iMinutes != 1 \
         else "%d minute" % iMinutes
-    print \
-        "Calculating pos took %s%s and %.2f seconds (%f seconds in total)" % \
-        (sHours, sMinutes, fSeconds, fTotalSeconds)
+    print("Calculating pos took %s%s and %.2f seconds (%f seconds in total)" % \
+        (sHours, sMinutes, fSeconds, fTotalSeconds))
 
   sOutputFile = os.path.join(oArgs.OUTPUT_DIR, os.path.basename(oArgs.FILE))
   sOutputFile.replace(".txt", '')
   sOutputFile = "%s.pickle" % sOutputFile
 
   if oArgs.bVerbose:
-    print "Start pickling to %s" % sOutputFile
+    print("Start pickling to %s" % sOutputFile)
     fStartTime = time.time()
 
   fhOutputFile = open(sOutputFile, mode='wb')
@@ -104,6 +103,5 @@ if __name__ == "__main__":
         if iHours > 1 else "%d hour, " % iHours 
     sMinutes = "%d minutes" % iMinutes if iMinutes != 1 \
         else "%d minute" % iMinutes
-    print \
-        "Pickling took %s%s and %.2f seconds (%f seconds in total)" % \
-        (sHours, sMinutes, fSeconds, fTotalSeconds)
+    print("Pickling took %s%s and %.2f seconds (%f seconds in total)" % \
+        (sHours, sMinutes, fSeconds, fTotalSeconds))

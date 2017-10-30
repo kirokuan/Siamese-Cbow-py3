@@ -16,7 +16,8 @@ under the License.
 
 import numpy as np
 import codecs
-import cPickle
+#import cPickle
+import _pickle as cPickle
 import pickle
 from gensim import matutils
 import lasagne
@@ -48,7 +49,7 @@ class wordEmbeddings:
       fhFile = open(sPickleFile, mode='rb')
       dDict = cPickle.load(fhFile)
       fhFile.close()
-
+    print(dDict)
     self.oArgs = dDict["oArgs"]
     self.npaWordEmbeddings = dDict["npaWordEmbeddings"]
 
@@ -56,12 +57,16 @@ class wordEmbeddings:
         np.sqrt(np.square(dDict["npaWordEmbeddings"]).sum(axis=1)).reshape(-1,
                                                                             1)
     if sVocabFile is None:
+      #print("sVocabFile is null")
       self.oVocab = dDict["oVocab"]
     else:
+      #print(sVocabFile)
       self.oVocab = vocabUtils.vocabulary(sVocabFile,
                                           iMaxNrOfWords=\
                                           self.oArgs.iMaxNrOfVocabWords)
-
+  def dump(self):
+    print(self.oVocab)
+    #self.oVocab.write()
   def __getitem__(self, sWord):
     iIndex = self.oVocab[sWord]
     return None if iIndex is None else self.npaWordEmbeddings[iIndex]
@@ -69,8 +74,10 @@ class wordEmbeddings:
   def getUnitVector(self, sWord):
     try:
       iIndex = self.oVocab[sWord]
+      print(iIndex)
       return None if iIndex is None else self.npaWordEmbeddings_units[iIndex] 
     except KeyError:
+      print("Key Error")
       return None
     
   def getRandomEmbedding(self, sWord):
@@ -131,8 +138,9 @@ class wordEmbeddings:
 
   def most_similar(self, sWord, iTopN=10, fMinDist=-1.0):
     npaWord_unit = self.getUnitVector(sWord)
-
+    
     if npaWord_unit is None:
+      print("word is not found")
       return None
 
     npaCosineSimilarities = np.dot(self.npaWordEmbeddings_units, npaWord_unit)
@@ -169,7 +177,7 @@ class wordEmbeddings:
       aIndexRange = range(1, self.oVocab.iNrOfWords)
 
     for iIndex in aIndexRange:
-      print "[%d] %s: %s" % \
+      print("[%d] %s: %s" % \
           (iIndex, self.oVocab.index2word(iIndex),
            ', '.join(["%s (%f)" % x for x in self.most_similar(self.oVocab.index2word(iIndex), fMinDist=fMinDist)] )
-           )
+           ))

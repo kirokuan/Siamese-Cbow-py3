@@ -1,0 +1,5 @@
+output/*
+py3/*
+vir/*
+word_embeddings_output/*
+*.pyc

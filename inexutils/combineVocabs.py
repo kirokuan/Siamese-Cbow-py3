@@ -14,14 +14,22 @@ See the License for the specific language governing permissions and limitations
 under the License.
 '''
 
+from __future__ import print_function
+
 import sys
 import glob
 import os
 import collections
 import codecs
-
-sys.path.append("../siamese-skipgram")
+import re
+#sys.path.append("../siamese-skipgram")
+sys.path.append("../")
 import vocabUtils
+
+import sys
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
 
 def readCountWord(sFile, sCols=None):
   fhFile = codecs.open(sFile, mode='r', encoding='utf8')
@@ -31,22 +39,21 @@ def readCountWord(sFile, sCols=None):
   iLineNr = 0
   for sLine in fhFile:
     iLineNr += 1
+    #print(re.split('\s+',sLine)) 
     try:
       sWord, sFile = None, None
       if sCols == "wordfreq":
-        sWord, sFreq = sLine.strip().split("\t")
+        sWord, sFreq = re.split('\s+',sLine)
       else: # "freqword"
-        sFreq, sWord = sLine.strip().split("\t")
+        sFreq, sWord,x = re.split('\s+',sLine)
 
       if sWord in dVocab:
-        print >>sys.stderr, \
-            "[WARNING]: word '%s' is already in" % sWord
+        eprint("[WARNING]: word '%s' is already in" % sWord)
       else:
         dVocab[sWord] = int(sFreq)
     except ValueError:
       sLine = sLine[:-1] if sLine.endswith("\n") else sLine
-      print >>sys.stderr, \
-          "[WARNING]: error in line %d: '%s'" % (iLineNr, sLine)
+      eprint("[WARNING]: error in line %d: '%s'" % (iLineNr, sLine))
    
   fhFile.close()
 
@@ -71,13 +78,13 @@ if __name__ == "__main__":
   for sVocabFile in \
         glob.glob(os.path.join(oArgs.VOCAB_DIRECTORY, "*.vocab.txt")):
     if oArgs.bVerbose:
-      print "Reading %s" % sVocabFile
+      print("Reading %s" % sVocabFile)
     dVocab = readCountWord(sVocabFile, sCols=oArgs.sCols)
     
     oCounter.update(dVocab)
 
   if oArgs.bVerbose:
-    print "Storing to %s" % oArgs.OUTPUT_FILE
+    print("Storing to %s" % oArgs.OUTPUT_FILE)
   fhOut = codecs.open(oArgs.OUTPUT_FILE, mode='w', encoding='utf8')
   # Output in sorted order
   for sKey, iFreq in oCounter.most_common(None):

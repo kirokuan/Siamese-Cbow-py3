@@ -16,10 +16,10 @@ under the License.
 
 import codecs
 import os
-import _pickle as cPickle
+import cPickle
 import numpy as np
 
-class torontoBookCorpusIterator:
+class weekUtils:
   def __init__(self, sCorpusDir=None, sSentencePositionsDir=None, 
                sName=None, bVerbose=False):
     self.bVerbose = bVerbose
@@ -31,7 +31,7 @@ class torontoBookCorpusIterator:
     for sFile in aFiles:
       sPickleFile = os.path.join(sSentencePositionsDir, "%s.pickle" % sFile)
       if self.bVerbose:
-        print("Loading %s" % sPickleFile)
+        print "Loading %s" % sPickleFile
 
       fhSentencePositions = open(sPickleFile, mode='rb')
       npaSentencePositions = cPickle.load(fhSentencePositions)
@@ -186,7 +186,7 @@ if __name__ == "__main__":
   i = 0
   if oArgs.bRandom:
     for s in oToBoCo.yieldRandomSentence():
-      print(' '.join(s))
+      print ' '.join(s)
       i += 1
       if i == 10:
         break
@@ -197,10 +197,10 @@ if __name__ == "__main__":
       aRandomTokens1 = next(funcRandomIterator)
       aRandomTokens2 = next(funcRandomIterator)
 
-      print("s  : %s\ns-1: %s\ns+1: %s\nr1 : %s\nr2 : %s\n" % (' '.join(t[0]),
+      print "s  : %s\ns-1: %s\ns+1: %s\nr1 : %s\nr2 : %s\n" % (' '.join(t[0]),
                                         ' '.join(t[1]),
                                         ' '.join(t[2]),
                                         ' '.join(aRandomTokens1),
-                                        ' '.join(aRandomTokens2) ))
+                                        ' '.join(aRandomTokens2) )
 
 

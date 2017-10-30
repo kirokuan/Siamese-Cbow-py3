@@ -16,6 +16,8 @@ under the License.
 
 import codecs
 import collections
+import numpy as np
+import pandas as pd
 
 if __name__ == "__main__":
   import argparse
@@ -29,14 +31,18 @@ if __name__ == "__main__":
 
   oCounter = collections.Counter()
 
-  fhFile = codecs.open(oArgs.TORONTO_BOOK_CORPUS_FILE,
-                       mode="r", encoding="utf8")
-  for sLine in fhFile:
+  #fhFile = codecs.open(oArgs.TORONTO_BOOK_CORPUS_FILE,
+  #                     mode="r", encoding="utf8")
+
+  root ="/tmp2/yckuan/data/filter2/"
+  data = pd.DataFrame.from_csv(root+oArgs.TORONTO_BOOK_CORPUS_FILE)  
+  
+  for sLine in data['text']:
     aTokens = [x for x in sLine.strip().split(' ') if x not in aNonTokens]
 
     oCounter.update(aTokens)
 
-  fhFile.close()
+  #fhFile.close()
     
-  for sWord, iFreq in oCounter.items():
-    print("%d\t%s" % (iFreq, sWord))
+  for sWord, iFreq in oCounter.iteritems():
+    print "%d\t%s" % (iFreq, sWord)

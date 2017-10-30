@@ -33,7 +33,7 @@ sys.path.append('./ppdbutils')
 import ppdbUtils
 sys.path.append('./torontobookcorpusutils')
 import torontoBookCorpusUtils
-
+import weekUtils
 # You can get killed form the outside on some clusters.
 # This is just to signal that.
 def signal_term_handler(signal, frame):
@@ -56,7 +56,7 @@ def init(oArgs):
   oW2v = None
   if oArgs.sWord2VecFile is not None:
     if oArgs.bVerbose:
-      print "Loading word2vec file"
+      print("Loading word2vec file")
 
     oW2v = gensim.models.Word2Vec.load_word2vec_format(oArgs.sWord2VecFile,
                                                        binary=True) 
@@ -73,12 +73,12 @@ def init(oArgs):
     exit(1)
 
   if oArgs.bVerbose:                    # -1 because of 0-embedding
-    print "Number of embeddings: %d" % (iNrOfEmbeddings-1)
-    print "Embedding size: %d" % iEmbeddingSize
+    print("Number of embeddings: %d" % (iNrOfEmbeddings-1))
+    print("Embedding size: %d" % iEmbeddingSize)
 
   sOutputFile = \
       scbowUtils.makeOutputFileName(oArgs, iNrOfEmbeddings, iEmbeddingSize)
-  print "Will store result to %s" % sOutputFile
+  print("Will store result to %s" % sOutputFile)
 
   iPos, npaTargets = getTargets(oArgs, sInputMode)
 
@@ -107,8 +107,11 @@ def inputMode(sData):
     return 'INEX'
   elif 'toronto' in sData:
     return 'TORONTO'
+  elif 'filter' in sData:
+    return 'week'
   else:
-    print >>sys.stderr, "[ERROR]: Don't know what input mode to run in (INEX, PPDB)or TORONTO from '%s'" % sData
+    return 'week'
+    #print >>sys.stderr, "[ERROR]: Don't know what input mode to run in (INEX, PPDB)or TORONTO from '%s'" % sData
     exit(1)
 
 def getSentenceIterators(oArgs, sInputMode):
@@ -140,6 +143,11 @@ def getSentenceIterators(oArgs, sInputMode):
 
     # In this case, as we have a large file of sentence positions, we want to 
     # use the same object again...
+
+    funcRandomIterator = oSentenceIterator.yieldRandomSentence()
+  elif sInputMode =="week":
+    oSentenceIterator = weekUtils.weekUtils(sCorpusDir=oArgs.DATA,sSentencePositionsDir=oArgs.DATA,sName='week',wk=oArgs.week,bVerbose=False)
+    fTotalNrOfBatches = (float(oSentenceIterator.iTotalNrOfSentences)/oArgs.iBatchSize)*oArgs.iEpochs
     funcRandomIterator = oSentenceIterator.yieldRandomSentence()
   else: ## PPDB
     oSentenceIterator = ppdbUtils.ppdb(oArgs.DATA,
@@ -199,7 +207,7 @@ if __name__ == "__main__":
       iPos, npaTargets = init(oArgs)
 
   if oArgs.bVerbose:
-    print "Building network"
+    print("Building network")
   oNetwork, forward_pass_fn, thsLearningRate, train_fn = \
       scbowUtils.build_scbow(oArgs, iPos=iPos, oW2v=oW2v, oVocab=oVocab,
                              tWeightShape=(iNrOfEmbeddings, iEmbeddingSize))
@@ -212,7 +220,7 @@ if __name__ == "__main__":
     exit(1)
 
   if oArgs.bVerbose:
-    print "Start training"
+    print("Start training")
 
   # Print a number every so-many batches (just so the progress is noticable)
   iBatchBunch = 100
@@ -245,18 +253,18 @@ if __name__ == "__main__":
       iTrainBatches += 1
       iNrOfBatchesSoFar += 1
       if oArgs.bVeryVerbose:
-        print iTrainBatches,
+        print(iTrainBatches)
   
       if oArgs.bVeryVerbose:
-        print "[%d] Prediction: %s" % (iTrainBatches,
-                                       forward_pass_fn(npaBatch_1, npaBatch_2))
+        print ("[%d] Prediction: %s" % (iTrainBatches,
+                                       forward_pass_fn(npaBatch_1, npaBatch_2)))
 
       fBatchTrainError = train_fn(npaBatch_1, npaBatch_2, npaTargets) \
           if oArgs.sLastLayer == 'cosine' \
           else train_fn(npaBatch_1, npaBatch_2)
 
       if oArgs.bVeryVerbose:
-        print "[%d] loss: %f" % (iTrainBatches, fBatchTrainError)
+        print("[%d] loss: %f" % (iTrainBatches, fBatchTrainError))
 
       fEpochTrainErr += fBatchTrainError
       fBatchBunchError += fBatchTrainError
@@ -267,10 +275,9 @@ if __name__ == "__main__":
 
       # Print the results for every bunch of batches
       if oArgs.bVerbose and (iTrainBatches % iBatchBunch == 0):
-        print \
-            "\nEpoch %d, batch %d (took %.3f seconds). Training loss: %.6f" % \
+        print ("\nEpoch %d, batch %d (took %.3f seconds). Training loss: %.6f" % \
             (iEpoch+1, iTrainBatches, time.time() - fBatchBunchStartTime, \
-               fBatchBunchError / iBatchBunch)
+               fBatchBunchError / iBatchBunch))
         fBatchBunchError = 0.0
         fBatchBunchStartTime = time.time()
 
@@ -284,9 +291,10 @@ if __name__ == "__main__":
 
     # Then we print the results for this epoch
     if oArgs.bVerbose:
-      print "\nEpoch %d of %d took %.3f seconds" % \
-          (iEpoch + 1, oArgs.iEpochs, time.time() - fEpochStartTime)
-      print "Training loss: %.6f" % (fEpochTrainErr / iTrainBatches)
+      print("\nEpoch %d of %d took %.3f seconds" % \
+          (iEpoch + 1, oArgs.iEpochs, time.time() - fEpochStartTime))
+      if iTrainBatches > 0:
+        print("Training loss: %.6f" % (fEpochTrainErr / iTrainBatches)) 
 
     # Also store the embeddings, if necessary
     if (oArgs.iStoreAtEpoch is not None) and \
@@ -312,8 +320,8 @@ if __name__ == "__main__":
         if iHours > 1 else "%d hour, " % iHours 
     sMinutes = "%d minutes" % iMinutes if iMinutes != 1 \
         else "%d minute" % iMinutes
-    print "\nIt took %s%s and %.2f seconds (%f seconds in total)\n" % \
-        (sHours, sMinutes, fSeconds, fTotalSeconds)
+    print("\nIt took %s%s and %.2f seconds (%f seconds in total)\n" % \
+        (sHours, sMinutes, fSeconds, fTotalSeconds))
 
   if not bStoredEmbeddingsAtLastEpoch:
     # Make it clear that this is the final one

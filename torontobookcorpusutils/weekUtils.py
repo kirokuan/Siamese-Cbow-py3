@@ -18,13 +18,14 @@ import codecs
 import os
 import _pickle as cPickle
 import numpy as np
+from functools import reduce
 
-class torontoBookCorpusIterator:
+class weekUtils:
   def __init__(self, sCorpusDir=None, sSentencePositionsDir=None, 
-               sName=None, bVerbose=False):
+               sName=None, bVerbose=False,wk=1):
     self.bVerbose = bVerbose
     self.sName = sName
-    aFiles = ["books_large_p1.corrected.txt", "books_large_p2.txt"]
+    aFiles = [ "week%i.txt" % i  for i in range(1,int(wk))]
     self.aFiles = []
     self.iTotalNrOfSentences = 0
 
@@ -60,7 +61,7 @@ class torontoBookCorpusIterator:
 
   def yieldSentence(self):
     # NOTE that we (ab)use the random indices, which were not shuffled yet
-    for iFileIndex in [0,1]:
+    for iFileIndex in range(len(self.aFiles)):
       # Get the next index for the sentence position array
       for iSentencePosition in self.aFiles[iFileIndex]["npaSentencePositions"]:
         # Go to that position in the file
@@ -73,15 +74,19 @@ class torontoBookCorpusIterator:
     NOTE that this iterator will yield FOREVER
     '''
     # Every time this iterator is started, we shuffle
-    np.random.shuffle(self.aFiles[0]["npaIndicesForRandom"])
-    np.random.shuffle(self.aFiles[1]["npaIndicesForRandom"])
+    for i in range(len(self.aFiles)):
+      np.random.shuffle(self.aFiles[i]["npaIndicesForRandom"])
+   
+    #np.random.shuffle(self.aFiles[1]["npaIndicesForRandom"])
 
     # And we reset
-    self.aFiles[0]["iYieldedRandom"] = 0
-    self.aFiles[1]["iYieldedRandom"] = 0
+    for i in range(len(self.aFiles)):
+      self.aFiles[i]["iYieldedRandom"] = 0
+   
+    #self.aFiles[1]["iYieldedRandom"] = 0
 
     while(1):
-      iFileIndex = np.random.randint(0,2) # Choose file 0 or 1
+      iFileIndex = np.random.randint(0,len(self.aFiles)) # Choose file 0 or 1
       
       # If we yielded as many indices as there are, shuffle again
       if self.aFiles[iFileIndex]["iYieldedRandom"] == \
@@ -106,26 +111,44 @@ class torontoBookCorpusIterator:
     This yields a random tuple, until all tuples are yielded
     '''
     # Every time this iterator is started, we shuffle
-    np.random.shuffle(self.aFiles[0]["npaIndicesForTuples"])
-    np.random.shuffle(self.aFiles[1]["npaIndicesForTuples"])
+    for i in range(len(self.aFiles)):
+      np.random.shuffle(self.aFiles[0]["npaIndicesForTuples"])
+ 
+    #np.random.shuffle(self.aFiles[1]["npaIndicesForTuples"])
 
     # And we reset
-    self.aFiles[0]["iYieldedTuple"] = 0
-    self.aFiles[1]["iYieldedTuple"] = 0
-
-    while( (self.aFiles[0]["iYieldedTuple"] < \
-              self.aFiles[0]["npaIndicesForTuples"].shape[0]) or \
-             (self.aFiles[1]["iYieldedTuple"] < 
-              self.aFiles[1]["npaIndicesForTuples"].shape[0]) ):
-      if self.aFiles[0]["iYieldedTuple"] >= \
-            self.aFiles[0]["npaIndicesForTuples"].shape[0]:
-        iFileIndex = 1
-      elif self.aFiles[1]["iYieldedTuple"] >= \
-            self.aFiles[1]["npaIndicesForTuples"].shape[0]:
-        iFileIndex = 0
-      else: # We haven't reached the end for any of the two
-        iFileIndex = np.random.randint(0,2) # Choose file 0 or 1
-
+    for i in range(len(self.aFiles)):
+      self.aFiles[i]["iYieldedTuple"] = 0
+    #self.aFiles[1]["iYieldedTuple"] = 0
+    
+    
+    while( reduce((lambda x,y: x or y),map((lambda x:x['iYieldedTuple']<x['npaIndicesForTuples'].shape[0]),self.aFiles))
+ #  (self.aFiles[0]["iYieldedTuple"] < \
+ #            self.aFiles[0]["npaIndicesForTuples"].shape[0]) \
+ #	or       (self.aFiles[1]["iYieldedTuple"] < 
+ #             self.aFiles[1]["npaIndicesForTuples"].shape[0])
+     ):
+     # iFileIndex=0
+      #i=0
+      #while i<len(self.aFiles) and self.aFiles[i]["iYieldedTuple"] >=self.aFiles[i]["npaIndicesForTuples"].shape[0]:
+      #  if self.bVerbose:
+      #    print("i shape:%i" % self.aFiles[i]["iYieldedTuple"])
+      #    print("shape: %i" % self.aFiles[i]["npaIndicesForTuples"].shape[0])
+      #  i+=1
+      #if self.bVerbose:
+      #  print("i is %i" % i)
+      #iFileIndex =i
+      #if iFileIndex==len(self.aFiles) and self.aFiles[i-1]["iYieldedTuple"] >= \
+      #      self.aFiles[i-1]["npaIndicesForTuples"].shape[0]:
+      #  iFileIndex = 0
+      #elif iFileIndex==len(self.aFiles): # We haven't reached the end for any of the two
+      iFileIndex = np.random.randint(0,len(self.aFiles)) # Choose file 0 or 1
+      while self.aFiles[iFileIndex]["iYieldedTuple"]>= self.aFiles[iFileIndex]["npaIndicesForTuples"].shape[0]:
+        iFileIndex=np.random.randint(0,len(self.aFiles))
+      #iFileIndex=0
+      if self.bVerbose:
+        print("iFileIndex:%i" % iFileIndex)
+      #print(str(len(self.aFiles)))     
       # Get a random position in the sentence position array
       # We don't want the very first or last sentence
       bDone = False

@@ -1,0 +1,17 @@
+[WARNING]: error in line 1: '1037638	'
+[WARNING]: error in line 2950: '34	 '
+[WARNING]: error in line 74892: '37	　'
+[WARNING]: error in line 86682: '8	 '
+[WARNING]: error in line 1: '1090859	'
+[WARNING]: error in line 30078: '70	　'
+[WARNING]: error in line 41436: '13	 '
+[WARNING]: error in line 41484: '50	 '
+Using cuDNN version 5110 on context None
+Mapped name None to device cuda0: TITAN X (Pascal) (0000:01:00.0)
+Traceback (most recent call last):
+  File "siamese-cbow.py", line 263, in <module>
+    if oArgs.sLastLayer == 'cosine' \
+  File "/usr/local/lib/python3.5/dist-packages/theano/compile/function_module.py", line 884, in __call__
+    self.fn() if output_subset is None else\
+KeyboardInterrupt
+./run3.sh: line 26:  9904 Aborted                 (core dumped) python3 siamese-cbow.py -v -share_weights -vocab $finalVocab -wk $wk -epochs 5 -neg 2 -embedding_size 100 $path /tmp2/yckuan/output/

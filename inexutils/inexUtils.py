@@ -101,7 +101,7 @@ class InexIterator:
 
     for sDir in self.nextDir():
       if self.bVerbose:
-        print "[%s]: DIR: %s" % (self.sName, sDir)
+        print("[%s]: DIR: %s" % (self.sName, sDir))
 
       if os.path.isdir(sDir): # Just to be sure
         aAllFiles = glob.glob(os.path.join(sDir, "*.xml.txt"))
@@ -110,7 +110,7 @@ class InexIterator:
                 
         for sFile in aAllFiles:
           if self.bVerbose:
-            print "[%s] FILE: %s" % (self.sName, sFile)
+            print("[%s] FILE: %s" % (self.sName, sFile))
             
           self.sCurrentFile = sFile
           self.sPreviousSentence = None
@@ -128,7 +128,7 @@ class InexIterator:
           
           for sLine in aAllLines:
             if self.bVerbose:
-              print "[%s] LINE: '%s'" % (self.sName, sLine.strip())
+              print("[%s] LINE: '%s'" % (self.sName, sLine.strip()))
 
             ### Dit moet weg als het pre-processen nog een keer is gedaan
             aLine = sLine.strip().split("\t")
@@ -148,7 +148,7 @@ class InexIterator:
               sSentence = sSentence.lower()
 
             if self.bVerbose:
-              print "[%s] SENTENCE: '%s'" % (self.sName, sSentence)
+              print("[%s] SENTENCE: '%s'" % (self.sName, sSentence))
 
             if self.bRandom or self.bSingleSentence:
               yield sSentence
@@ -194,7 +194,7 @@ if __name__ == "__main__":
 
   i = 0
   for s in oSingleSentenceIterator:
-    print s
+    print(s)
     i += 1
     if i == 10:
       exit(1)

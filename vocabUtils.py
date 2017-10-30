@@ -17,6 +17,9 @@ under the License.
 import codecs
 import numpy as np
 import sys
+import traceback
+import re
+
 
 class vocabulary:
   '''
@@ -42,27 +45,26 @@ class vocabulary:
       iLineNr = 0
       for sLine in fhFile:
         iLineNr += 1
-      
+        #print sLine
         # Because we have a dummy word, the maximum number of words is actually 
         # 1 higher than iMaxNrOfWords
         if (iMaxNrOfWords is None) or (iIndex <= iMaxNrOfWords):
           try:
             if self.sInputMode == 'freqword':
-              sFreq, sWord = sLine.strip().split(' ')
+              sFreq, sWord = re.split('\s+',sLine.strip())
             else: # wordfreq
-              sWord, sFreq = sLine.strip().split(' ')
+              sWord, sFreq,x = re.split('\s+',sLine)
   
             if sWord in self.dVocab:
-              print >>sys.stderr, \
-                "[WARNING]: word '%s' is already in" % sWord
+              print("[WARNING]: word '%s' is already in" % sWord, file=sys.stderr)
             else:
               self.dVocab[sWord] = iIndex
               self.dIndex2word[iIndex] = sWord
               iIndex += 1
           except ValueError:
+            traceback.print_exc()
             sLine = sLine[:-1] if sLine.endswith("\n") else sLine
-            print >>sys.stderr, \
-                "[WARNING]: error in line %d: '%s'" % (iLineNr, sLine)
+            print("[WARNING]: error in line %d: '%s'" % (iLineNr, sLine), file=sys.stderr)
         else:
           break
       
@@ -76,8 +78,7 @@ class vocabulary:
     iIndex = 1     
     for sWord in aWordList:
       if sWord in self.dVocab:
-        print >>sys.stderr, \
-            "[WARNING]: word '%s' is already in" % sWord
+        print("[WARNING]: word '%s' is already in" % sWord, file=sys.stderr)
       else:
         self.dVocab[sWord] = iIndex
         self.dIndex2word[iIndex] = sWord
@@ -99,17 +100,19 @@ class vocabulary:
     try:
       return self.dVocab[sKey]
     except KeyError:
+      #print("%s key not found @ get item" % sKey ,file=sys.stderr)
       return None
 
   def index2word(self, iIndex):
     try:
       return self.dIndex2word[iIndex]
     except KeyError:
+      print("key not found @ index 2 word", file=sys.stderr)
       return None
 
   def write(self):
     for iIndex in range(1, self.iNrOfWords):
-      print "[%d] %s" % (iIndex, self.index2word(iIndex))
+      print("[%d] %s" % (iIndex, self.index2word(iIndex)))
 
 if __name__ == "__main__":
   import argparse
@@ -132,4 +135,4 @@ if __name__ == "__main__":
                       sInputMode=oArgs.sInputMode)
 
   for i in range(10):
-    print "%s: %d" % (oVocab.dIndex2word[i], i)
+    print("%s: %d" % (oVocab.dIndex2word[i], i))

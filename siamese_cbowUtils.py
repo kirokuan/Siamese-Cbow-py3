@@ -21,7 +21,8 @@ import numpy as np
 import sys
 import os
 import re
-import cPickle
+import _pickle as cPickle
+#import cPickle
 
 def makeOutputFileName(oArgs, iNrOfEmbeddings, iEmbeddingSize):
   sShareWeights = "sharedWeights" if oArgs.bShareWeights else "noSharedWeights"
@@ -51,7 +52,7 @@ def makeOutputFileName(oArgs, iNrOfEmbeddings, iEmbeddingSize):
 
 def storeWordEmbeddings(sOutputFile, npaWordEmbeddings, oVocab, oArgs):
   if oArgs.bVerbose:
-    print "Storing word embeddings to %s" % sOutputFile
+    print("Storing word embeddings to %s" % sOutputFile)
 
   fhOut = open(sOutputFile, mode='wb')
   dSCBOW = {"oArgs": oArgs,
@@ -394,17 +395,19 @@ def nextBatch(oSentenceIterator, funcRandomIterator, oVocab=None,
   # it's smaller than the batch size
   for tSentenceTuple in oSentenceIterator:
     # NOTE in the toronto case, the sentence iterator already yields tokens
+    isTorontoFormat=  oSentenceIterator.sName == "torontoSentenceIterator" or \
+         oSentenceIterator.sName =="week"
     aWeIndices1 = \
         [oVocab[sToken] for sToken in tSentenceTuple[0] \
            if oVocab[sToken] is not None] \
-           if oSentenceIterator.sName == "torontoSentenceIterator" else \
+           if isTorontoFormat else \
            [oVocab[sToken] for sToken in tSentenceTuple[0].split(' ') \
               if oVocab[sToken] is not None]
   
     aWeIndices2 = \
         [oVocab[sToken] for sToken in tSentenceTuple[1] \
            if oVocab[sToken] is not None] \
-           if oSentenceIterator.sName == "torontoSentenceIterator" else \
+           if isTorontoFormat else \
            [oVocab[sToken] for sToken in tSentenceTuple[1].split(' ') \
               if oVocab[sToken] is not None]
 
@@ -413,7 +416,7 @@ def nextBatch(oSentenceIterator, funcRandomIterator, oVocab=None,
       aWeIndices3 = \
           [oVocab[sToken] for sToken in tSentenceTuple[2] \
              if oVocab[sToken] is not None] \
-             if oSentenceIterator.sName == "torontoSentenceIterator" else \
+             if isTorontoFormat else \
              [oVocab[sToken] for sToken in tSentenceTuple[2].split(' ') \
                 if oVocab[sToken] is not None]
            
@@ -442,7 +445,7 @@ def nextBatch(oSentenceIterator, funcRandomIterator, oVocab=None,
         aWeIndicesRandom = \
             [oVocab[sToken] for sToken in randomSentence \
                if oVocab[sToken] is not None] \
-               if oSentenceIterator.sName == "torontoSentenceIterator" \
+               if isTorontoFormat \
                else [oVocab[sToken] for sToken in randomSentence.split(' ') \
                        if oVocab[sToken] is not None]
 
@@ -557,13 +560,13 @@ def build_scbow(oArgs, iPos=None, oW2v=None, oVocab=None, tWeightShape=None):
   target_var = T.fmatrix('targets') if oArgs.sLastLayer == "cosine" else None
 
   if oArgs.bVerbose:
-      print "Building prediction functions"
+      print("Building prediction functions")
   # Create a loss expression for training, i.e., a scalar objective we want
   # to minimize (for our multi-class problem, it is the cross-entropy loss):
   prediction = lasagne.layers.get_output(llFinalLayer)
 
   if oArgs.bVerbose:
-      print "Building loss functions"
+      print("Building loss functions")
   # For checking/debugging
   forward_pass_fn = theano.function([input_var_1, input_var_2], prediction)
 
@@ -579,7 +582,7 @@ def build_scbow(oArgs, iPos=None, oW2v=None, oVocab=None, tWeightShape=None):
   loss = loss.mean()
   
   if oArgs.bVerbose:
-    print "Building update functions"
+    print("Building update functions")
 
   params = lasagne.layers.get_all_params(llFinalLayer, trainable=True)
 
@@ -604,7 +607,7 @@ def build_scbow(oArgs, iPos=None, oW2v=None, oVocab=None, tWeightShape=None):
     updates = lasagne.updates.sgd(loss, params, learning_rate=thsLearningRate)
 
   if oArgs.bVerbose:
-    print "Building training function"
+    print("Building training function")
   # Compile a function performing a training step on a mini-batch (by giving
   # the updates dictionary) and returning the corresponding training loss:
   train_fn = None
@@ -627,8 +630,8 @@ def updateLearningRate(thsLearningRate, iNrOfBatchesSoFar, fTotalNrOfBatches,
           )
   thsLearningRate.set_value(fNewLearningRate)
   if oArgs.bVeryVerbose:
-    print "Batch %d of %.0f" % (iNrOfBatchesSoFar, fTotalNrOfBatches)
-    print "Learning rate: %f"  % thsLearningRate.get_value()
+    print("Batch %d of %.0f" % (iNrOfBatchesSoFar, fTotalNrOfBatches))
+    print("Learning rate: %f"  % thsLearningRate.get_value())
 
 def parseArguments():
   import argparse
@@ -716,6 +719,7 @@ def parseArguments():
   oArgsParser.add_argument('-w2v', dest="sWord2VecFile", metavar="FILE",
                            help="A word2vec model can be used to initialize the weights for words in the vocabulary file from (missing words just get a random embedding). If the weights are not initialized this way, they will be trained from scratch.",
                            action="store")
+  oArgsParser.add_argument('-wk',dest="week",action='store')
   oArgs = oArgsParser.parse_args()
 
   if (oArgs.sVocabFile is None) and (oArgs.sWord2VecFile is None):
@@ -810,13 +814,13 @@ if __name__ == "__main__":
                                iNeg=oArgs.iNeg, iBatchSize=oArgs.iBatchSize,
                                bShuffle=False):
     # Check the batch itself
-    print "Batch (1):\n%s\n      (2)\n%s" % (npaBatch_1, npaBatch_2)
+    print("Batch (1):\n%s\n      (2)\n%s" % (npaBatch_1, npaBatch_2))
     
     npaPredictions = forward_pass_fn(npaBatch_1, npaBatch_2)
     
-    print "Predictions (%s):\n%s" % (npaPredictions[0].dtype, npaPredictions)
+    print("Predictions (%s):\n%s" % (npaPredictions[0].dtype, npaPredictions))
 
     L = loss_fn(npaPredictions, npaTargets)
-    print "Loss: %s" % L
+    print("Loss: %s" % L)
 
     

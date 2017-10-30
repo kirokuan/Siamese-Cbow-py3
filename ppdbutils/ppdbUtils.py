@@ -170,7 +170,8 @@ if __name__ == "__main__":
                bRandom=oArgs.bRandom)
 
   for result in oPPDB:
+    r=result.encode('utf-8')
     if oArgs.bRandom or oArgs.bSingleSentence:
-      print "%d\t%s" % (len(result.split(' ')), result)
+      print("%d\t%s" % (len(r.split(' ')), r))
     else:
-      print "%s - %s" % (result[0], result[1])
+      print("%s - %s" % (r[0], r[1]))
